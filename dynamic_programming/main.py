@@ -6,7 +6,7 @@ from dynamic_programming import solve_method
 
 if __name__ == "__main__":
     method_name = "Dynamic Programming (1D)"
-    workload_name = "Workload C2"
+    workload_name = "Workload C1"
     
     print(f"=== {method_name} - {workload_name} ===\n")
     
@@ -33,23 +33,30 @@ if __name__ == "__main__":
         ("Q50", "Database Migration", 50, 150)
     ]
     
-    cost_lookup = {job[0]: job[2] for job in workload_C2}
+    cost_lookup = {job[0]: job[2] for job in workload_C1}
 
     capacities = [20, 35, 50, 65, 80, 95, 110, 140]
-    median_runtimes = []
 
-    for W in capacities:
+    v_greedy_c1 = [80, 147, 232, 282, 282, 282, 282, 282]
+    v_greedy_c2 = [60, 160, 160, 280, 280, 410, 410, 545]
+    
+    median_runtimes = []
+    greedy_gaps = []
+
+    # Procesamos las 8 capacidades mediante su índice i (de 0 a 7)
+    for i in range(len(capacities)):
+        W = capacities[i]
         runtimes_for_this_W = []
         best_load_relief = 0
         chosen_ids = []
         
+        # Repetimos 5 veces para estabilizar la toma de tiempo
         for _ in range(5):
             start_time = time.perf_counter()
             
-            best_load_relief, chosen_ids = solve_method(workload_C2, W) 
+            best_load_relief, chosen_ids = solve_method(workload_C1, W) 
             
             end_time = time.perf_counter()
-            
             time_ms = (end_time - start_time) * 1000 
             runtimes_for_this_W.append(time_ms)
             
@@ -57,22 +64,38 @@ if __name__ == "__main__":
         median_runtimes.append(mediana)
 
         total_migration_cost = sum(cost_lookup[jid] for jid in chosen_ids if jid in cost_lookup)
-  
+
+        # Cálculo del Greedy Gap para la capacidad actual i
+        # (Cambia v_greedy_c2 por v_greedy_c1 cuando evalúes Workload C1)
+        greedy_gap = best_load_relief - v_greedy_c1[i]
+        greedy_gaps.append(greedy_gap)
+
+        # Imprimimos la información dentro del ciclo de cada W
         print(f"Method Name:               {method_name}")
         print(f"Workload Name:             {workload_name}")
         print(f"Capacity (W):              {W}")
         print(f"Returned Value (Relief):   {best_load_relief}")
+        print(f"Greedy Gap:                {greedy_gap}")
         print(f"Selected Job Identifiers:  {chosen_ids}")
         print(f"Total Migration Cost:      {total_migration_cost} / {W}")
         print(f"Median Runtime:            {mediana:.5f} ms")
         print(f"Raw Runtimes (ms):         {[round(r, 5) for r in runtimes_for_this_W]}")
         print("-" * 60 + "\n")
 
-    #gráfica
+    # Gráfica 1: Runtime vs Capacity
     plt.figure()
-    plt.plot(capacities, median_runtimes, marker='o')
+    plt.plot(capacities, median_runtimes, marker='o', color='b')
     plt.title(f'Runtime vs Capacity ({workload_name})')
     plt.xlabel('Offloading Capacity W')
     plt.ylabel('Median Runtime (ms)')
+    plt.grid(True)
+    plt.show()
+
+    # Gráfica 2: Greedy Value Gap vs Capacity
+    plt.figure()
+    plt.plot(capacities, greedy_gaps, marker='s', color='r')
+    plt.title(f'Greedy Value Gap vs Capacity ({workload_name})')
+    plt.xlabel('Offloading Capacity W')
+    plt.ylabel('Greedy Load-Relief Gap (V_optimal - V_greedy)')
     plt.grid(True)
     plt.show()
