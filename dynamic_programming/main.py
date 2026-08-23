@@ -2,7 +2,7 @@ from typing import List, Tuple
 import time
 import statistics
 import matplotlib.pyplot as plt
-from dynamic_programming import solve_method
+from dynamic_programing import solve_method
 
 if __name__ == "__main__":
     method_name = "Dynamic Programming (1D)"
