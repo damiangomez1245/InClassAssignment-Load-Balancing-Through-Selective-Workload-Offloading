@@ -33,7 +33,6 @@ if __name__ == "__main__":
         ("Q50", "Database Migration", 50, 150)
     ]
     
-    # Crear un diccionario para mapear ID -> Costo de migración
     cost_lookup = {job[0]: job[2] for job in workload_C2}
 
     capacities = [20, 35, 50, 65, 80, 95, 110, 140]
@@ -45,23 +44,20 @@ if __name__ == "__main__":
         chosen_ids = []
         
         for _ in range(5):
-            start_time = time.perf_counter() # Inicia cronómetro
+            start_time = time.perf_counter()
             
-            best_load_relief, chosen_ids = solve_method(workload_C2, W) # Ejecuta el código
+            best_load_relief, chosen_ids = solve_method(workload_C2, W) 
             
-            end_time = time.perf_counter()   # Detiene cronómetro
+            end_time = time.perf_counter()
             
             time_ms = (end_time - start_time) * 1000 
             runtimes_for_this_W.append(time_ms)
             
-        # Calculamos la mediana
         mediana = statistics.median(runtimes_for_this_W)
         median_runtimes.append(mediana)
 
-        # Cálculo de costo total de los seleccionados
         total_migration_cost = sum(cost_lookup[jid] for jid in chosen_ids if jid in cost_lookup)
-
-        # Impresión de todos los requerimientos
+  
         print(f"Method Name:               {method_name}")
         print(f"Workload Name:             {workload_name}")
         print(f"Capacity (W):              {W}")
@@ -72,7 +68,7 @@ if __name__ == "__main__":
         print(f"Raw Runtimes (ms):         {[round(r, 5) for r in runtimes_for_this_W]}")
         print("-" * 60 + "\n")
 
-    # --- Creando la Gráfica ---
+    #gráfica
     plt.figure()
     plt.plot(capacities, median_runtimes, marker='o')
     plt.title(f'Runtime vs Capacity ({workload_name})')
