@@ -33,12 +33,12 @@ OPTIMAL DYNAMIC PROGRAMMING
 
 
 EXACT BRANCH-AND-BOUND
-- Comandos necesarios
-- Lenguaje y version:
-- Dependencias y versiones:
-- Instrucciones para ejecutar la prueba de rendimiento:
-- Instrucciones para generar las figuras
-- numero de repeticiones utilizadas:
-- reglas de desempate deterministas:
-- cualquier semilla aleatoria fija si se utiliza con aleatoridad: 
-- Archivos y directoris de salida separados:
+- Comandos necesarios: python branch&bound.py
+- Lenguaje y version: Python 3.10+
+- Dependencias y versiones: Módulos estándar de Python (time, os). Para el benchmarking y la generación de gráficas se requiere numpy (v1.20+) y matplotlib (v3.7+).
+- Instrucciones para ejecutar la prueba de rendimiento: Ejecutar el script principal. El código evaluará los workloads C1 y C2 a través de las capacidades estándar y de borde, aplicando el algoritmo de branch and bound con poda basada en límite superior e inicialización por récord Greedy.
+- Instrucciones para generar las figuras: Las figuras se generan automáticamente durante la ejecución del script. Al acabar las pruebas de rendimiento, se guardarán los gráficos de tiempo de ejecución y del gap de Greedy en formato PNG y PDF dentro de la carpeta `figures/`.
+- Numero de repeticiones utilizadas: 5 repeticiones por cada configuración de workload y capacidad. El tiempo final reportado corresponde a la mediana de las ejecuciones medida en milisegundos.
+- reglas de desempate deterministas: Al ordenar los trabajos por densidad de valor se evalúan así: mayor beneficio por costo (v_i / w_i) en orden descendente, menor costo de migración en orden ascendente, y orden alfabético del ID del trabajo en orden ascendente.
+- cualquier semilla aleatoria fija si se utiliza con aleatoridad: No aplica. El algoritmo es 100% determinista y no usa números aleatorios.
+- Archivos y directoris de salida separados: Las figuras de rendimiento y errores se exportan automáticamente en la carpeta de salida `figures/` (con archivos `metrics_C1.png`, `metrics_C1.pdf`, `metrics_C2.png` y `metrics_C2.pdf`).
