@@ -31,15 +31,15 @@ C2 = [
     ("Q50", "Database Migration",       50, 150)
 ]
 
-# Capacidades requeridas por la tarea
+# Capacidades requeridas 
 capacities = [0, 5, 20, 35, 50, 65, 80, 95, 110, 140]
 
-# 1. Algoritmo Greedy (necesario para el récord inicial de B&B)
+# 1. Algoritmo Greedy (necesario para el inicio)
 def solve_greedy(jobs, capacity_W):
     if capacity_W <= 0:
         return 0, []
 
-    # Ordenar por densidad (vi/wi) descendente, luego menor costo, luego id
+    # Ordenar por densidad (vi/wi) descendente luego menor costo luego id
     sorted_jobs = sorted(
         jobs,
         key=lambda j: (- (j[3] / j[2]), j[2], j[0])
@@ -62,7 +62,7 @@ def solve_branch_and_bound(jobs, capacity_W):
     if capacity_W <= 0:
         return 0, []
 
-    # Ordenar por densidad vi/wi para que el Upper Bound sea eficiente
+    # Ordenar por densidad vi/wi para que el upper bound sea eficiente
     sorted_jobs = sorted(
         jobs,
         key=lambda j: (- (j[3] / j[2]), j[2], j[0])
@@ -72,12 +72,12 @@ def solve_branch_and_bound(jobs, capacity_W):
     best_value = 0
     best_selection = []
 
-    # Inicializar récord (incumbent) usando Greedy
+    # iniciar incumbent usando greedy
     g_val, g_sel = solve_greedy(jobs, capacity_W)
     best_value = g_val
     best_selection = g_sel
 
-    # Función para calcular el límite superior
+    #Funcikn para calcular el limite superior
     def compute_upper_bound(index, current_cost, current_relief):
         bound = current_relief
         rem_cap = capacity_W - current_cost
@@ -91,7 +91,7 @@ def solve_branch_and_bound(jobs, capacity_W):
                 break
         return bound
 
-    # Función recursiva de búsqueda con poda
+    # funcion recursiva de búsqueda con poda
     def backtrack(index, current_cost, current_relief, current_ids):
         nonlocal best_value, best_selection
 
@@ -102,26 +102,26 @@ def solve_branch_and_bound(jobs, capacity_W):
         if index == n:
             return
 
-        # Poda: Si el límite superior no supera nuestro récord, adiós a esta rama
+        # Poda Si el lim superior no supera nuestro récord, podar rama
         ub = compute_upper_bound(index, current_cost, current_relief)
         if ub <= best_value:
             return
 
-        # Rama 1: Incluir el trabajo (si cabe)
+        # Rama 1: Incluir si cabe
         j_id, name, cost, relief = sorted_jobs[index]
         if current_cost + cost <= capacity_W:
             current_ids.append(j_id)
             backtrack(index + 1, current_cost + cost, current_relief + relief, current_ids)
             current_ids.pop()
 
-        # Rama 2: Excluir el trabajo
+        # rama 2: Borrar el trabajo
         if compute_upper_bound(index + 1, current_cost, current_relief) > best_value:
             backtrack(index + 1, current_cost, current_relief, current_ids)
 
     backtrack(0, 0, 0, [])
     return best_value, best_selection
 
-# Prueba rápida con el workload C1 y capacidad W = 50
+#prueba rapida con el workload C1 y capacidad W=50
 relief, ids = solve_branch_and_bound(C1, 50)
 print("Mejor relieve:", relief)
 print("Trabajos elegidos:", ids)
@@ -165,9 +165,7 @@ def solve_dp(jobs, capacity_W):
             best_c = c
     return max_relief, tracking[best_c]
 
-# (Tu Branch-and-Bound ya lo tienes arriba, asegurate de tenerlo cargado como solve_branch_and_bound)
-
-# Interfaz unificada requerida por la tarea
+#Interfaz en una
 def solve_method(jobs, capacity_W, method_name):
     if method_name == "Greedy":
         return solve_greedy(jobs, capacity_W)
@@ -178,7 +176,7 @@ def solve_method(jobs, capacity_W, method_name):
     else:
         raise ValueError("Método desconocido")
 
-# 3. Protocolo de Benchmarking y Experimentos
+# 3. Benchmarking y experimentos
 capacities = [20, 35, 50, 65, 80, 95, 110, 140]
 edge_capacities = [0, 5]
 all_caps = edge_capacities + capacities
@@ -192,13 +190,13 @@ print("--- INICIANDO BENCHMARK GENERAL Y VALIDACIONES CRUZADAS ---")
 for w_name, w_data in workloads.items():
     for cap in all_caps:
         if w_name == "C1" and cap == 5:
-            continue # El edge check W=5 es específico para C2 según instrucciones
+            continue # El edge check W=5 es específico para C2 
 
         opt_val_dp = None
         opt_val_bb = None
 
         for m_name in methods:
-            # Medir al menos 5 repeticiones para la mediana
+            #medir 5 repeticiones para el promedio
             times = []
             val, sel = 0, []
             for _ in range(5):
@@ -209,7 +207,7 @@ for w_name, w_data in workloads.items():
 
             median_time = np.median(times)
 
-            # Validaciones automáticas obligatorias
+            #validaciones automaticas 
             job_dict = {j[0]: (j[2], j[3]) for j in w_data}
             if cap > 0 and val > 0:
                 for j_id in sel:
@@ -232,7 +230,7 @@ for w_name, w_data in workloads.items():
                 "chosen_ids": sel
             })
 
-        # Verificar que DP y B&B den exactamente el mismo resultado óptimo
+        #ver que DP y B&B den exactamente el mismo resultado
         if opt_val_dp is not None and opt_val_bb is not None:
             assert opt_val_dp == opt_val_bb, f"Discrepancia óptima en {w_name} con W={cap}: DP={opt_val_dp}, B&B={opt_val_bb}"
 
@@ -272,9 +270,9 @@ for w_name in ["C1", "C2"]:
 
     plt.tight_layout()
 
-    # 1. Guardar archivos en la carpeta figures (para los deliverables)
+    #guardar archivos en la carpeta figures 
     plt.savefig(f"figures/metrics_{w_name}.png", dpi=300)
     plt.savefig(f"figures/metrics_{w_name}.pdf", format="pdf")
 
-    # 2. MOSTRAR DIRECTAMENTE EN EL COLAB de forma ordenada
+    #mostrar en el colab ordendo
     plt.show()
